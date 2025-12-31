@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast'; // Corrected import path for useToast
+import { useToast } from '@/hooks/use-toast';
 import { Loader2, Image as ImageIcon, Eye, EyeOff } from 'lucide-react';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'; // Import ToggleGroup components
 
 import { embedTextInImage, extractTextFromImage, loadImageData, imageDataToBlob } from '@/modules/Steganography';
 import { downloadFile } from '@/utils/download';
@@ -103,53 +104,63 @@ const SteganographyPage = () => {
   }, [imageFile, toast]);
 
   const actionButton = mode === 'embed' ? (
-    <Button onClick={handleEmbed} disabled={isLoading || !imageFile || !textInput} className="w-full">
+    <Button
+      onClick={handleEmbed}
+      disabled={isLoading || !imageFile || !textInput}
+      className="w-full bg-gradient-to-r from-secondary to-accent text-secondary-foreground hover:from-secondary/90 hover:to-accent/90 transition-all duration-300 ease-in-out shadow-lg"
+    >
       {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Eye className="mr-2 h-4 w-4" />}
       Embed Text
     </Button>
   ) : (
-    <Button onClick={handleExtract} disabled={isLoading || !imageFile} className="w-full">
+    <Button
+      onClick={handleExtract}
+      disabled={isLoading || !imageFile}
+      className="w-full bg-gradient-to-r from-primary to-accent text-primary-foreground hover:from-primary/90 hover:to-accent/90 transition-all duration-300 ease-in-out shadow-lg"
+    >
       {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <EyeOff className="mr-2 h-4 w-4" />}
       Extract Text
     </Button>
   );
 
-  const title = mode === 'embed' ? 'Embed Text in Image' : 'Extract Text from Image';
+  const cardTitle = mode === 'embed' ? 'Embed Text in Image' : 'Extract Text from Image';
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-950 p-4 sm:p-8">
-      <h1 className="text-4xl md:text-5xl font-extrabold mb-8 text-center text-primary dark:text-primary-foreground leading-tight">
+      <h1 className="text-4xl md:text-5xl font-extrabold mb-4 text-center text-primary dark:text-primary-foreground leading-tight">
         Steganography Tool
       </h1>
+      <p className="text-lg text-muted-foreground mb-8 text-center max-w-2xl">
+        Securely hide secret information inside an image using LSB steganography.
+      </p>
+
       <Card className="w-full max-w-lg mx-auto shadow-xl rounded-xl border-border/50 dark:border-border/30">
-        <CardHeader>
+        <CardHeader className="pb-4">
           <CardTitle className="flex items-center text-primary dark:text-primary-foreground">
-            <ImageIcon className="mr-2 h-6 w-6 text-secondary dark:text-accent" />
-            {title}
+            <ImageIcon className="mr-3 h-7 w-7 text-secondary dark:text-accent" />
+            {cardTitle}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="flex space-x-2">
-            <Button
-              variant={mode === 'embed' ? 'default' : 'outline'}
-              onClick={() => setMode('embed')}
-              className="flex-1"
-              disabled={isLoading}
-            >
-              Embed
-            </Button>
-            <Button
-              variant={mode === 'extract' ? 'default' : 'outline'}
-              onClick={() => setMode('extract')}
-              className="flex-1"
-              disabled={isLoading}
-            >
-              Extract
-            </Button>
-          </div>
+          <ToggleGroup
+            type="single"
+            value={mode}
+            onValueChange={(value: Mode) => {
+              if (value) setMode(value);
+            }}
+            className="grid grid-cols-2 gap-2"
+            disabled={isLoading}
+          >
+            <ToggleGroupItem value="embed" aria-label="Toggle embed" className="flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+              <Eye className="mr-2 h-4 w-4" /> Embed
+            </ToggleGroupItem>
+            <ToggleGroupItem value="extract" aria-label="Toggle extract" className="flex-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+              <EyeOff className="mr-2 h-4 w-4" /> Extract
+            </ToggleGroupItem>
+          </ToggleGroup>
 
           <div className="space-y-2">
-            <Label htmlFor="image-file" className="text-foreground">Image Input</Label>
+            <Label htmlFor="image-file" className="text-foreground">Image Input / Upload</Label>
             <Input id="image-file" type="file" accept="image/png, image/jpeg" onChange={handleImageChange} className="file:text-primary file:font-medium file:bg-muted file:border-muted-foreground/20 file:rounded-md file:mr-2 file:py-1 file:px-3 hover:file:bg-muted-foreground/10 transition-colors" />
             {imageFile && <p className="text-sm text-muted-foreground">Selected: {imageFile.name} ({Math.round(imageFile.size / 1024)} KB)</p>}
             <p className="text-xs text-muted-foreground">
@@ -162,7 +173,7 @@ const SteganographyPage = () => {
               <Label htmlFor="text-to-hide" className="text-foreground">Text to Hide</Label>
               <Textarea
                 id="text-to-hide"
-                placeholder="Enter text to embed in the image..."
+                placeholder="Enter secret message to embed inside the image... (Encrypt the text before embedding for higher security)"
                 value={textInput}
                 onChange={(e) => setTextInput(e.target.value)}
                 rows={4}
@@ -197,6 +208,9 @@ const SteganographyPage = () => {
           {actionButton}
         </CardContent>
       </Card>
+      <p className="text-sm text-muted-foreground mt-8 text-center max-w-md">
+        This tool adds an additional security layer by hiding encrypted data inside images.
+      </p>
       <div className="mt-12">
         <MadeWithDyad />
       </div>
