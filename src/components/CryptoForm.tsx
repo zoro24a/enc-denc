@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -18,23 +18,34 @@ const ENCRYPTED_FILE_EXTENSION = '.dyadenc';
 
 type Mode = 'encrypt' | 'decrypt';
 
-export const CryptoForm = () => {
+interface CryptoFormProps {
+  defaultMode?: Mode;
+}
+
+export const CryptoForm = ({ defaultMode = 'encrypt' }: CryptoFormProps) => {
   const { toast } = useToast();
-  const [mode, setMode] = useState<Mode>('encrypt');
+  const [mode, setMode] = useState<Mode>(defaultMode);
   const [file, setFile] = useState<File | null>(null);
   const [password, setPassword] = useState('');
   const [receiverEmail, setReceiverEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    setMode(defaultMode);
+  }, [defaultMode]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0] || null;
     setFile(selectedFile);
     if (selectedFile) {
-      // Automatically switch mode based on file extension
-      if (selectedFile.name.endsWith(ENCRYPTED_FILE_EXTENSION)) {
+      // Automatically switch mode based on file extension if defaultMode is not explicitly set
+      // or if the user selects a file that clearly indicates a different mode.
+      if (defaultMode === 'encrypt' && selectedFile.name.endsWith(ENCRYPTED_FILE_EXTENSION)) {
         setMode('decrypt');
-      } else {
+      } else if (defaultMode === 'decrypt' && !selectedFile.name.endsWith(ENCRYPTED_FILE_EXTENSION)) {
         setMode('encrypt');
+      } else {
+        setMode(defaultMode); // Revert to default mode if no clear indication from file
       }
     }
   };
