@@ -11,10 +11,11 @@ import { deriveKeyPBKDF2 } from '@/modules/KeyDerivation';
 import { generateDataEncryptionKey, deriveMasterKey, wrapDataKey, unwrapDataKey } from '@/modules/KeyManagement';
 import { packageMetadata, parseMetadata, ParsedMetadata } from '@/modules/Metadata';
 import { encryptFileStream } from '@/modules/EncryptionStream';
-import { decryptFileStream } from '@/modules/DecryptionStream';
+import { decryptFileStream } => '@/modules/DecryptionStream';
 import { downloadFile } from '@/utils/download';
 
 const ENCRYPTED_FILE_EXTENSION = '.dyadenc';
+const MIN_PASSWORD_LENGTH = 7; // Define minimum password length
 
 type Mode = 'encrypt' | 'decrypt';
 
@@ -55,6 +56,15 @@ export const CryptoForm = ({ defaultMode = 'encrypt' }: CryptoFormProps) => {
       toast({
         title: 'Missing Inputs',
         description: 'Please provide a file, password, and receiver email.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      toast({
+        title: 'Password Too Short',
+        description: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`,
         variant: 'destructive',
       });
       return;
@@ -116,6 +126,15 @@ export const CryptoForm = ({ defaultMode = 'encrypt' }: CryptoFormProps) => {
       toast({
         title: 'Missing Inputs',
         description: 'Please provide the encrypted file, password, and receiver email.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      toast({
+        title: 'Password Too Short',
+        description: `Password must be at least ${MIN_PASSWORD_LENGTH} characters long.`,
         variant: 'destructive',
       });
       return;
@@ -200,7 +219,7 @@ export const CryptoForm = ({ defaultMode = 'encrypt' }: CryptoFormProps) => {
           <Input
             id="password"
             type="password"
-            placeholder="Enter strong password"
+            placeholder={`Enter strong password (min ${MIN_PASSWORD_LENGTH} chars)`}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
