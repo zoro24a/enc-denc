@@ -11,7 +11,7 @@ import { deriveKeyPBKDF2 } from '@/modules/KeyDerivation';
 import { generateDataEncryptionKey, deriveMasterKey, wrapDataKey, unwrapDataKey } from '@/modules/KeyManagement';
 import { packageMetadata, parseMetadata, ParsedMetadata } from '@/modules/Metadata';
 import { encryptFileStream } from '@/modules/EncryptionStream';
-import { decryptFileStream } => '@/modules/DecryptionStream';
+import { decryptFileStream } from '@/modules/DecryptionStream';
 import { downloadFile } from '@/utils/download';
 
 const ENCRYPTED_FILE_EXTENSION = '.dyadenc';
