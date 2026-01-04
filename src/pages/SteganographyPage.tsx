@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { SteganographyForm } from '@/components/SteganographyForm'; // Import the new component
-import { MadeWithDyad } from '@/components/made-with-dyad';
 
 const SteganographyPage = () => {
   return (
@@ -26,9 +25,6 @@ const SteganographyPage = () => {
       <p className="text-sm text-muted-foreground mt-8 text-center max-w-md">
         This tool adds an additional security layer by hiding encrypted data inside images.
       </p>
-      <div className="mt-12">
-        <MadeWithDyad />
-      </div>
     </div>
   );
 };

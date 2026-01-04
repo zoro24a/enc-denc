@@ -1,4 +1,3 @@
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import { CryptoForm } from "@/components/CryptoForm";
 import { Card, CardContent, CardDescription } from "@/components/ui/card";
 import { AlertTriangle } from "lucide-react";
@@ -26,10 +25,6 @@ const Index = () => {
         <div className="flex-1">
           <CryptoForm defaultMode="decrypt" />
         </div>
-      </div>
-
-      <div className="mt-12">
-        <MadeWithDyad />
       </div>
     </div>
   );
